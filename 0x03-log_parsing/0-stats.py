@@ -1,9 +1,10 @@
 #!/usr/bin/python3
-import sys
-
 """
 Initialize variables to keep track of total file size and status code counts
 """
+
+import sys
+
 
 total_file_size = 0
 status_code_counts = {200: 0, 301: 0, 400: 0, 401: 0, 403: 0, 404: 0, 405: 0, 500: 0}
@@ -31,7 +32,7 @@ try:
 
         except (IndexError, ValueError):
             continue
-        
+
         if line_count % 10 == 0:
             print_metrics()
 except KeyboardInterrupt:
