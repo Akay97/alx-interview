@@ -1,39 +1,47 @@
 #!/usr/bin/python3
-"""
-Log parsing
-"""
-
 import sys
-import re
 
-if __name__ == '__main__':
 
-    line_count = 0
-    total_file_size = 0
-    status_codes = ["200", "301", "400", "401", "403", "404", "405", "500"]
-    stats = {code: 0 for code in status_codes}
+# Initialize variables to keep track of total file size and status code counts
+total_file_size = 0
+status_code_counts = {200: 0, 301: 0, 400: 0, 401: 0, 403: 0, 404: 0, 405: 0, 500: 0}
+line_count = 0
 
-    def print_stats(stats: dict, total_size: int) -> None:
-        print("File size:", total_size)
-        for code in sorted(stats):
-            if stats[code] > 0:
-                print(code + ":", stats[code])
+def print_metrics():
+    """Prints the total file size and counts of status codes in ascending order."""
+    print("File size:", total_file_size)
+    for code in sorted(status_code_counts.keys()):
+        if status_code_counts[code] > 0:
+            print("{}: {}".format(code, status_code_counts[code]))
 
-    try:
-        for line in sys.stdin:
-            line_count += 1
-            line = line.strip()
-            match = re.match(r'.*GET \/projects\/260 HTTP\/1\.1" (\d+) (\d+)', line)
-            if match:
-                status_code = match.group(1)
-                file_size = int(match.group(2))
-                if status_code in status_codes:
-                    stats[status_code] += 1
-                total_file_size += file_size
-            if line_count % 10 == 0:
-                print_stats(stats, total_file_size)
-        print_stats(stats, total_file_size)
-    except KeyboardInterrupt:
-        print_stats(stats, total_file_size)
-        raise
+try:
+    for line in sys.stdin:
+        line_count += 1
+        try:
+            # Split the line and extract parts
+            parts = line.split()
+            file_size = int(parts[-1])
+            status_code = int(parts[-2])
+
+            # Update total file size
+            total_file_size += file_size
+
+            # Update the count for the given status code if it's recognized
+            if status_code in status_code_counts:
+                status_code_counts[status_code] += 1
+        except (IndexError, ValueError):
+            # Skip lines that do not conform to the expected format
+            continue
+
+        # Print metrics every 10 lines
+        if line_count % 10 == 0:
+            print_metrics()
+
+except KeyboardInterrupt:
+    # Print metrics upon keyboard interruption (CTRL + C)
+    print_metrics()
+    raise
+
+# Print metrics at the end if not interrupted earlier
+print_metrics()
 
