@@ -3,7 +3,6 @@
 The N xQeens
 """
 
-
 import sys
 
 
