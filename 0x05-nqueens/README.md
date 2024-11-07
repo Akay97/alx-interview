@@ -30,4 +30,3 @@ Make sure you have a basic understanding of the following concepts:
 To run the program, use the following syntax:
 ```bash
 ./nqueens N
-
